@@ -10,7 +10,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 const io = new Server(server, {
     cors: {
-        origin: "https://liveshare-beta.vercel.app/",
+        origin: "http://localhost:3000",
         methods: ["GET", "POST"]
     }
 })
@@ -25,14 +25,15 @@ io.on("connection", (socket) => {
         console.log(`User with ID: ${socket.id} joined room: ${data}`)
     })
 
-    socket.on("send_message", (data) => {
-         socket.to(data.room).emit("receive_message", data);
+    socket.on("shared_PublicFile", (data) => {
+        socket.join(data.companyId)
+        socket.to(data.companyId).emit("receive_Publicfile", data);
     })
 
     socket.on("disconnect", () => {
         console.log("User Disconnected", socket.id)
     })
-})  
+})
 
 
 server.listen(PORT, () => console.log(`Server up at PORT:${PORT}`))
